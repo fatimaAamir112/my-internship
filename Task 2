@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+class Transaction {
+public:
+    string type;
+    double amount;
+    Transaction(string t, double a) : type(t), amount(a) {}
+};
+
+class Account {
+private:
+    int accountNumber;
+    double balance;
+    vector<Transaction> transactions;
+public:
+    Account(int accNum) : accountNumber(accNum), balance(0) {}
+    
+    void deposit(double amount) {
+        balance += amount;
+        transactions.push_back(Transaction("Deposit", amount));
+    }
+    
+    bool withdraw(double amount) {
+        if (amount > balance) {
+            cout << "Insufficient funds!\n";
+            return false;
+        }
+        balance -= amount;
+        transactions.push_back(Transaction("Withdrawal", amount));
+        return true;
+    }
+    
+    void display() {
+        cout << "\nAccount #" << accountNumber << "\n";
+        cout << "Balance: $" << balance << "\n";
+        cout << "Recent transactions:\n";
+        for (const auto& t : transactions) {
+            cout << "- " << t.type << ": $" << t.amount << "\n";
+        }
+    }
+};
+
+int main() {
+    Account acc(12345); // Sample account
+    
+    while (true) {
+        cout << "\nBanking Menu:\n";
+        cout << "1. Deposit\n2. Withdraw\n3. View Account\n4. Exit\n";
+        int choice;
+        cin >> choice;
+        
+        switch (choice) {
+            case 1: {
+                double amount;
+                cout << "Deposit amount: $";
+                cin >> amount;
+                acc.deposit(amount);
+                break;
+            }
+            case 2: {
+                double amount;
+                cout << "Withdraw amount: $";
+                cin >> amount;
+                acc.withdraw(amount);
+                break;
+            }
+            case 3:
+                acc.display();
+                break;
+            case 4:
+                cout << "Exiting...\n";
+                return 0;
+            default:
+                cout << "Invalid choice!\n";
+        }
+    }
+}
