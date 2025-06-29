@@ -1,0 +1,100 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+using namespace std;
+
+// Function to split a string by space (helper for reading credentials)
+vector<string> splitString(string str) {
+    vector<string> tokens;
+    string word = "";
+    for (auto c : str) {
+        if (c == ' ') {
+            tokens.push_back(word);
+            word = "";
+        } else {
+            word += c;
+        }
+    }
+    tokens.push_back(word);
+    return tokens;
+}
+
+// Check if a username exists in the file
+bool userExists(string username) {
+    ifstream file("users.txt");
+    string line;
+    while (getline(file, line)) {
+        vector<string> tokens = splitString(line);
+        if (tokens.size() >= 1 && tokens[0] == username) {
+            file.close();
+            return true;
+        }
+    }
+    file.close();
+    return false;
+}
+
+// Register a new user
+void registerUser() {
+    string username, password;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    if (userExists(username)) {
+        cout << "Username already exists. Please choose another.\n";
+        return;
+    }
+
+    ofstream file("users.txt", ios::app);
+    file << username << " " << password << endl;
+    file.close();
+    cout << "Registration successful!\n";
+}
+
+// Login an existing user
+void loginUser() {
+    string username, password;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    ifstream file("users.txt");
+    string line;
+    while (getline(file, line)) {
+        vector<string> tokens = splitString(line);
+        if (tokens.size() >= 2 && tokens[0] == username && tokens[1] == password) {
+            cout << "Login successful! Welcome, " << username << ".\n";
+            file.close();
+            return;
+        }
+    }
+    file.close();
+    cout << "Invalid username or password.\n";
+}
+
+int main() {
+    int choice;
+    while (true) {
+        cout << "1. Register\n2. Login\n3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                registerUser();
+                break;
+            case 2:
+                loginUser();
+                break;
+            case 3:
+                cout << "Exiting...\n";
+                return 0;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    }
+}
